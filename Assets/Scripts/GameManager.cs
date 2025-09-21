@@ -10,6 +10,12 @@ public class GameManager : MonoBehaviour
     public float respawnInvulerability = 3.0f;
     public int lives = 3;
     public int score = 0;
+    [SerializeField] private int highscore = 0; // show in inspector but cant change
+
+    private void Awake()
+    {
+        highscore = PlayerPrefs.GetInt("Highscore", 0);
+    }
 
     public void AsteroidDestroyed(Asteroid asteroid)
     {
@@ -56,9 +62,28 @@ public class GameManager : MonoBehaviour
 
     private void GameOver()
     {
-        this.lives = 3;
+        //Save player high score
+        int savedHighScore = PlayerPrefs.GetInt("Highscore", 0);
+        if (this.score > savedHighScore)
+        {
+            PlayerPrefs.SetInt("Highscore", this.score);
+            PlayerPrefs.Save();
+            highscore = this.score; //Update Inspector variable value
+        }
+        else
+        {
+            highscore = savedHighScore; //Keep current high score 
+        }
+            this.lives = 3;
         this.score = 0;
 
         Invoke(nameof(Respawn), this.respawnTime);
+    }
+
+    private void ResetHighScore()
+    {
+        PlayerPrefs.DeleteKey("HighScore");
+        PlayerPrefs.Save();
+        highscore = 0;
     }
 }

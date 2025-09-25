@@ -64,7 +64,7 @@ public class Player : MonoBehaviour
     {
      if(collision.gameObject.tag == "Asteroid")
         {
-            _rigidBody.velocity = Vector3.zero;
+            _rigidBody.linearVelocity = Vector3.zero;
             _rigidBody.angularVelocity = 0.0f;
 
             this.gameObject.SetActive(false); //stop entire gameobject, not rendering anything 

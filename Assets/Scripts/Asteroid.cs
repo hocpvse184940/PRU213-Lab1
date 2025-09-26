@@ -35,18 +35,18 @@ public class Asteroid : MonoBehaviour
         Destroy(this.gameObject, this.maxLifeTime);
     } 
 
-    // Ban asteroids, and split if they big enough
+  // Ban asteroids, and split if they big enough
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.gameObject.tag == "Bullet")
+        if (collision.gameObject.tag == "Bullet")
         {
-           if((this.size * 0.5f) >= this.minSize)
-           {
+            if ((this.size * 0.5f) >= this.minSize)
+            {
                 CreateSplit();
                 CreateSplit();
-           }
-            FindObjectOfType<GameManager>().AsteroidDestroyed(this);
-           Destroy(this.gameObject);
+            }
+            Object.FindFirstObjectByType<GameManager>().AsteroidDestroyed(this);
+            Destroy(this.gameObject);
         }
     }
 

@@ -42,6 +42,25 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f; // Đảm bảo game chạy bình thường khi bắt đầu
     }
 
+    public void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            bool invincible = player.gameObject.layer == LayerMask.NameToLayer("Ignore Collisions");
+            if (invincible)
+            {
+                player.gameObject.layer = LayerMask.NameToLayer("Player");
+            }
+            player.gameObject.layer = LayerMask.NameToLayer("Ignore Collisions");
+        }
+
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            this.score = 99999;
+            this.scoreText.text = " " + this.score;
+        }
+    }
+
     public void AsteroidDestroyed(Asteroid asteroid)
     {
         this.explosion.transform.position = asteroid.transform.position;
@@ -61,7 +80,11 @@ public class GameManager : MonoBehaviour
         this.scoreText.text = " " + this.score;
     }
 
-
+    public void StarCollected(int value)
+    {
+        this.score += 100;
+        this.scoreText.text = " " + this.score;
+    }
 
     // HÀM RESTART GAME KHI NHẤN NÚT
     public void RestartGame()

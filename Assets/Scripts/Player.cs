@@ -68,7 +68,7 @@ public class Player : MonoBehaviour
             _rigidBody.angularVelocity = 0.0f;
 
             this.gameObject.SetActive(false); //stop entire gameobject, not rendering anything 
-            FindObjectOfType<GameManager>().PlayerDie(); //Need to optimize due to performance tax
+            Object.FindFirstObjectByType<GameManager>().PlayerDie(); //Need to optimize due to performance tax
         }
     }
 }

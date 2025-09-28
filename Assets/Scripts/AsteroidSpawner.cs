@@ -1,32 +1,64 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class AsteroidSpawner : MonoBehaviour
 {
     public Asteroid asteroidPrefab;
-    public float trajectoryVariance = 15.0f;
-    public float spawnRate = 2.0f;
-    public float spawnDistance = 15.0f;
+
+    [Header("Spawn shape")]
+    public float trajectoryVariance = 15f;
+    public float spawnDistance = 15f;
     public int spawnAmount = 1;
-    private void Start()
+
+    [Header("Difficulty over time")]
+    public float baseSpawnInterval = 2.0f;   // giây lúc đầu
+    public float minSpawnInterval = 0.4f;   // không thấp hơn
+    public float spawnAccelPerSecond = 0.02f;  // mỗi giây giảm bấy nhiêu giây
+
+    public float baseAsteroidSpeed = 2.5f;   // tốc độ lúc đầu
+    public float speedGainPerSecond = 0.15f;  // mỗi giây tăng bấy nhiêu tốc độ
+    public float maxAsteroidSpeed = 12f;    // không vượt quá
+
+    float _nextSpawnAt;
+
+    void Start()
     {
-        InvokeRepeating(nameof(Spawn), this.spawnRate, this.spawnRate);
+        _nextSpawnAt = Time.time + baseSpawnInterval;
     }
 
-    //Spawner se la mot cai circle dua vao vi tri vector setup trong unity inspector, lay vi tri tu ben ngoai circle cach bao nhieu unit, sau do spawn r tha tutu vao ben trong game scene
-    private void Spawn()
+    void Update()
     {
-        for(int i = 0; i< this.spawnAmount; i++)
+        float t = Time.timeSinceLevelLoad; // tổng thời gian đã chơi
+
+        // Tính interval & speed hiện tại
+        float currentInterval = Mathf.Max(minSpawnInterval, baseSpawnInterval - spawnAccelPerSecond * t);
+        float currentSpeed = Mathf.Min(maxAsteroidSpeed, baseAsteroidSpeed + speedGainPerSecond * t);
+
+        // (tùy chọn) log để bạn thấy rõ khó tăng
+        if (Time.frameCount % 30 == 0)
+            Debug.Log($"[Difficulty] t={t:F1}s | interval={currentInterval:F2}s | speed={currentSpeed:F2}");
+
+        if (Time.time >= _nextSpawnAt)
         {
-            Vector3 spawnDirection = Random.insideUnitCircle.normalized * this.spawnDistance;
-            Vector3 spawnPoint = this.transform.position + spawnDirection;
-            float variance = Random.Range(-this.trajectoryVariance, this.trajectoryVariance);
-            Quaternion rotation = Quaternion.AngleAxis(variance, Vector3.forward);
-            Asteroid asteroid = Instantiate(this.asteroidPrefab, spawnPoint, rotation);
-            asteroid.size = Random.Range(asteroid.minSize, asteroid.maxSize);
-            asteroid.SetTrajectory(rotation * -spawnDirection); //set trajectory de asteroid di chuyen vao ben trong thay vi di ra ngoai
+            _nextSpawnAt = Time.time + currentInterval;
+            Spawn(currentSpeed);
         }
     }
 
+    private void Spawn(float moveSpeed)
+    {
+        for (int i = 0; i < spawnAmount; i++)
+        {
+            Vector3 spawnDir = Random.insideUnitCircle.normalized * spawnDistance;
+            Vector3 spawnPoint = transform.position + spawnDir;
+            float variance = Random.Range(-trajectoryVariance, trajectoryVariance);
+            Quaternion rot = Quaternion.AngleAxis(variance, Vector3.forward);
+
+            Asteroid asteroid = Instantiate(asteroidPrefab, spawnPoint, rot);
+            asteroid.size = Random.Range(asteroid.minSize, asteroid.maxSize);
+
+            // Bay từ ngoài vào trong
+            Vector2 flyDir = (rot * -spawnDir);
+            asteroid.SetTrajectory(flyDir, moveSpeed);
+        }
+    }
 }

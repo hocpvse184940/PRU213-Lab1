@@ -11,4 +11,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Asteroids.unity
     guid: 4f6e68023268c4f7981e03d0c6eb40bb
+  - enabled: 1
+    path: Assets/Scenes/Info.unity
+    guid: 868cb82652f5945998003fdd59d70a10
   m_configObjects: {}
+  m_UseUCBPForAssetBundles: 0

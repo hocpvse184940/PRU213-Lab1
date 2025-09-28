@@ -978,9 +978,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   asteroidPrefab: {fileID: 2422125227606750873, guid: 68efcbdfcf0f7e84e889dbc15803b138, type: 3}
   trajectoryVariance: 15
-  spawnRate: 2
   spawnDistance: 15
   spawnAmount: 1
+  baseSpawnInterval: 2
+  minSpawnInterval: 0.4
+  spawnAccelPerSecond: 0.02
+  baseAsteroidSpeed: 2.5
+  speedGainPerSecond: 0.15
+  maxAsteroidSpeed: 12
 --- !u!4 &787957180
 Transform:
   m_ObjectHideFlags: 0

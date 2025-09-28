@@ -18,4 +18,10 @@ public class MainMenu : MonoBehaviour
             Application.Quit(); // Thoát app khi build ra .exe/.apk
 #endif
     }
+
+public void OpenInfo()
+{
+    SceneManager.LoadScene("Info");   // đúng tên scene Info
+}
+
 }

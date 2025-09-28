@@ -12,11 +12,13 @@ public class Player : MonoBehaviour
     private bool _thrusting;
     private float _turnDirection;
 
+    private GameManager gameManager;
+
     //Goi 1 lan trong suot cycle app, khoi tao ref
     private void Awake()
     {
         _rigidBody = GetComponent<Rigidbody2D>(); //ref toi rigidbody
-
+        gameManager = Object.FindFirstObjectByType<GameManager>();
     }
     void Update()
     {
@@ -58,6 +60,11 @@ public class Player : MonoBehaviour
     {
         Bullet bullet = Instantiate(this.bulletPrefab, this.transform.position, this.transform.rotation);
         bullet.Project(this.transform.up);
+        // play sound
+        if (gameManager != null)
+        {
+            gameManager.PlaySound(gameManager.shootSound);
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -68,7 +75,12 @@ public class Player : MonoBehaviour
             _rigidBody.angularVelocity = 0.0f;
 
             this.gameObject.SetActive(false); //stop entire gameobject, not rendering anything 
-            Object.FindFirstObjectByType<GameManager>().PlayerDie(); //Need to optimize due to performance tax
+
+            if (gameManager != null)
+            {
+                gameManager.PlayerDie();
+            }
+            //Object.FindFirstObjectByType<GameManager>().PlayerDie(); //Need to optimize due to performance tax
         }
     }
 }

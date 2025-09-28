@@ -19,8 +19,16 @@ public class GameManager : MonoBehaviour
     public GameObject gameOverPanel; // Panel chính của màn hình Game Over
     public TextMeshProUGUI finalScoreText; // Text hiển thị điểm số cuối cùng
     public TextMeshProUGUI highscoreText;  // Text hiển thị điểm cao nhất
-    //public GameObject pausePanel; // Panel tạm dừng game (nếu có để tắt khi game over)
+                                           //public GameObject pausePanel; // Panel tạm dừng game (nếu có để tắt khi game over)
 
+    // KHAI BÁO CÁC BIẾN ÂM THANH MỚI
+    public AudioClip backgroundMusic;
+    public AudioClip shootSound;
+    public AudioClip collectSound;
+    public AudioClip playerDeadSound;
+    public AudioClip asteroidExplosionSound;
+
+    private AudioSource audioSource; // Dùng để phát nhạc nền
 
 
     private void Awake()
@@ -33,11 +41,21 @@ public class GameManager : MonoBehaviour
         {
             gameOverPanel.SetActive(false);
         }
-        // Đảm bảo màn hình Pause cũng ẩn khi game bắt đầu
-        //if (pausePanel != null)
-        //{
-        //    pausePanel.SetActive(false);
-        //}
+        // Lấy AudioSource Component
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            // Nếu chưa có, thêm vào GameObject này
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+
+        // PHÁT NHẠC NỀN
+        if (backgroundMusic != null)
+        {
+            audioSource.clip = backgroundMusic;
+            audioSource.loop = true; // Lặp lại nhạc nền
+            audioSource.Play();
+        }
 
         Time.timeScale = 1f; // Đảm bảo game chạy bình thường khi bắt đầu
     }
@@ -61,12 +79,25 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // HÀM CHUNG ĐỂ PHÁT HIỆU ỨNG ÂM THANH (SFX)
+    public void PlaySound(AudioClip clip)
+    {
+        if (clip != null)
+        {
+            // Sử dụng PlayClipAtPoint để phát hiệu ứng âm thanh 1 lần, không bị trùng lặp
+            // Phát tại vị trí của Camera để đảm bảo luôn nghe thấy
+            AudioSource.PlayClipAtPoint(clip, Camera.main.transform.position);
+        }
+    }
     public void AsteroidDestroyed(Asteroid asteroid)
     {
         this.explosion.transform.position = asteroid.transform.position;
         this.explosion.Play();
 
-        if(asteroid.size < 0.75)
+        // PHÁT TIẾNG NỔ THIÊN THẠCH
+        PlaySound(asteroidExplosionSound);
+
+        if (asteroid.size < 0.75)
         {
             this.score += 100;
         } else if(asteroid.size < 1.2f)
@@ -84,6 +115,8 @@ public class GameManager : MonoBehaviour
     {
         this.score += 100;
         this.scoreText.text = " " + this.score;
+        // PHÁT TIẾNG NHẶT COIN/SAO
+        PlaySound(collectSound);
     }
 
     // HÀM RESTART GAME KHI NHẤN NÚT
@@ -106,6 +139,11 @@ public class GameManager : MonoBehaviour
 
         // Hồi sinh người chơi và bắt đầu game mới
         Respawn();
+        // Phát lại nhạc nền
+        if (audioSource != null && backgroundMusic != null && !audioSource.isPlaying)
+        {
+            audioSource.Play();
+        }
     }
 
     // HÀM QUIT GAME KHI NHẤN NÚT
@@ -127,6 +165,9 @@ public class GameManager : MonoBehaviour
 
     public void PlayerDie()
     {
+        // PHÁT TIẾNG NGƯỜI CHƠI CHẾT
+        PlaySound(playerDeadSound);
+
         this.explosion.transform.position = this.player.transform.position;
         this.explosion.Play();
         this.lives--;
@@ -134,11 +175,6 @@ public class GameManager : MonoBehaviour
         // Call a method to update the hearts
         this.heartManager.UpdateHearts(this.lives);
 
-        //if (this.lives <= 0)
-        //{
-        //    GameOver();
-        //}
-        //Invoke(nameof(Respawn), this.respawnTime);
 
         if (this.lives <= 0)
         {
@@ -167,6 +203,11 @@ public class GameManager : MonoBehaviour
 
     private void GameOver()
     {
+        // Tắt nhạc nền TRƯỚC KHI PHÁT ÂM THANH GAME OVER
+        if (audioSource != null)
+        {
+            audioSource.Stop();
+        }
         // Vô hiệu hóa người chơi để không thể điều khiển hoặc va chạm nữa
         this.player.gameObject.SetActive(false);
 

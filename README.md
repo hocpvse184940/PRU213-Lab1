@@ -32,7 +32,8 @@ Cosmic Voyage is a thrilling space shooter game where you pilot your spaceship t
     - Press `I` for **Invincible Mode**
     - Press `H` for **Highscore**
 4. **Restarting the game** will disable any active cheats and return all gameplay settings to default.
-
+## Game record 
+https://drive.google.com/file/d/1lGOl20hroSvAAI0U4DPjnJtvFSguyJwj/view?usp=drive_link
 ## Note
 
 - These cheats are for testing and fun purposes. Use them responsibly!
